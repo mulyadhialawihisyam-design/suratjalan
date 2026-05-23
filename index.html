@@ -172,7 +172,7 @@
       const tbody = document.getElementById('data-table-body');
       tbody.innerHTML = `<tr><td colspan="4" class="text-center py-8 text-cyan-600 animate-pulse">LOADING_${currentMenu}_RECORDS...</td></tr>`;
 
-      if (!WEB_APP_URL || WEB_APP_URL === "PASANG_URL_EXEC_WEB_APP_GAS_DI_SINI") {
+      if (!WEB_APP_URL || WEB_APP_URL === "https://script.google.com/macros/s/AKfycbxoxFPNzwDvvOsbUpbKbcogzcq0CBVXU34aTA8BL-y8fnqY5Gudwpci1B7bwLQJrJJn5w/exec") {
         tbody.innerHTML = `<tr><td colspan="4" class="text-center py-8 text-amber-500 font-medium">⚠️ WEB_APP_URL_NOT_CONFIGURED!</td></tr>`;
         return;
       }
