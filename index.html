@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sistem Log Surat Jalan (EHUB & TO_PNG) - Dark Mode</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-900 min-h-screen text-gray-100 font-sans">
+
+  <div class="max-w-4xl mx-auto px-4 py-8">
+    <header class="mb-8 text-center">
+      <h1 class="text-3xl font-bold text-cyan-400">Log Surat Jalan</h1>
+      <p class="text-gray-400 mt-2">Dokumentasi Serah Terima DO & Foto Bukti</p>
+    </header>
+
+    <div class="flex justify-center space-x-4 mb-6">
+      <button id="tab-ehub" onclick="switchMenu('EHUB')" class="px-6 py-2.5 font-semibold rounded-lg bg-cyan-600 text-white shadow-md focus:outline-none transition">
+        EHUB
+      </button>
+      <button id="tab-topng" onclick="switchMenu('TO_PNG')" class="px-6 py-2.5 font-semibold rounded-lg bg-gray-800 text-gray-300 border border-gray-700 hover:bg-gray-700 focus:outline-none transition">
+        TO_PNG
+      </button>
+    </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+      <div class="md:col-span-1 bg-gray-950 p-6 rounded-xl shadow-md border border-gray-800 h-fit">
+        <h2 class="text-lg font-bold mb-4 text-gray-200 flex items-center">
+          Input Data <span id="current-menu-badge" class="ml-2 text-xs px-2 py-0.5 bg-cyan-950 text-cyan-400 rounded-full border border-cyan-800/50">EHUB</span>
+        </h2>
+        
+        <form id="do-form" onsubmit="handleSubmit(event)" class="space-y-4">
+          <div>
+            <label class="block text-xs font-semibold text-gray-400 uppercase mb-1">Nomor DO</label>
+            <input type="text" id="nomor_do" class="w-full bg-gray-900 border border-gray-700 text-gray-100 px-3 py-2 rounded-lg focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500 outline-none transition" placeholder="Masukkan nomor DO..." required>
+          </div>
+
+          <div>
+            <label class="block text-xs font-semibold text-gray-400 uppercase mb-1">Ekspedisi</label>
+            <input type="text" id="ekspedisi" class="w-full bg-gray-900 border border-gray-700 text-gray-100 px-3 py-2 rounded-lg focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500 outline-none transition" placeholder="Nama driver / armada..." required>
+          </div>
+
+          <div>
+            <label class="block text-xs font-semibold text-gray-400 uppercase mb-1">Keterangan</label>
+            <textarea id="keterangan" rows="3" class="w-full bg-gray-900 border border-gray-700 text-gray-100 px-3 py-2 rounded-lg focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500 outline-none transition text-sm" placeholder="Catatan tambahan (opsional)..."></textarea>
+          </div>
+
+          <div>
+            <label class="block text-xs font-semibold text-gray-400 uppercase mb-1">Upload Foto (Maks 6)</label>
+            <input type="file" id="photos" accept="image/*" multiple onchange="handleFileSelect(event)" class="w-full text-sm text-gray-400 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-cyan-950 file:text-cyan-400 hover:file:bg-cyan-900 cursor-pointer">
+            <p class="text-[10px] text-gray-500 mt-1">Bisa pilih beberapa foto sekaligus dari galeri/kamera.</p>
+          </div>
+
+          <div id="image-preview" class="grid grid-cols-3 gap-2 pt-2"></div>
+
+          <button type="submit" id="btn-submit" class="w-full bg-cyan-600 hover:bg-cyan-700 text-white font-medium py-2.5 px-4 rounded-lg transition shadow focus:outline-none flex justify-center items-center">
+            Simpan Data
+          </button>
+        </form>
+      </div>
+
+      <div class="md:col-span-2 bg-gray-950 p-6 rounded-xl shadow-md border border-gray-800">
+        <div class="flex justify-between items-center mb-4">
+          <h2 class="text-lg font-bold text-gray-200">Riwayat Pengiriman</h2>
+          <button onclick="fetchData()" class="text-sm text-cyan-400 hover:text-cyan-300 font-medium flex items-center">
+            🔄 Refresh
+          </button>
+        </div>
+
+        <div class="overflow-x-auto">
+          <table class="w-full text-left border-collapse text-sm">
+            <thead>
+              <tr class="bg-gray-900 text-gray-400 uppercase text-[11px] tracking-wider border-b border-gray-800">
+                <th class="py-3 px-4 font-semibold">Waktu / DO</th>
+                <th class="py-3 px-4 font-semibold">Ekspedisi</th>
+                <th class="py-3 px-4 font-semibold">Keterangan</th>
+                <th class="py-3 px-4 font-semibold">Foto Bukti</th>
+              </tr>
+            </thead>
+            <tbody id="data-table-body" class="divide-y divide-gray-800">
+              <tr>
+                <td colspan="4" class="text-center py-8 text-gray-500">Memuat data riwayat...</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // --- KONFIGURASI URL WEB APP GAS LO ---
+    const WEB_APP_URL = "PASANG_URL_EXEC_WEB_APP_GAS_DI_SINI";
+
+    let currentMenu = "EHUB";
+    let selectedPhotosBase64 = [];
+
+    // Ganti Tab Menu (EHUB / TO_PNG)
+    function switchMenu(menu) {
+      currentMenu = menu;
+      
+      const tabEhub = document.getElementById('tab-ehub');
+      const tabToPng = document.getElementById('tab-topng');
+      const badge = document.getElementById('current-menu-badge');
+
+      if (menu === 'EHUB') {
+        tabEhub.className = "px-6 py-2.5 font-semibold rounded-lg bg-cyan-600 text-white shadow-md focus:outline-none transition";
+        tabToPng.className = "px-6 py-2.5 font-semibold rounded-lg bg-gray-800 text-gray-300 border border-gray-700 hover:bg-gray-700 focus:outline-none transition";
+      } else {
+        tabToPng.className = "px-6 py-2.5 font-semibold rounded-lg bg-cyan-600 text-white shadow-md focus:outline-none transition";
+        tabEhub.className = "px-6 py-2.5 font-semibold rounded-lg bg-gray-800 text-gray-300 border border-gray-700 hover:bg-gray-700 focus:outline-none transition";
+      }
+
+      badge.textContent = menu;
+      fetchData();
+    }
+
+    // Memproses Inputan File Gambar ke Base64
+    function handleFileSelect(event) {
+      const files = event.target.files;
+      const previewContainer = document.getElementById('image-preview');
+      previewContainer.innerHTML = '';
+      selectedPhotosBase64 = [];
+
+      if (files.length > 6) {
+        alert("Maksimal foto yang diupload adalah 6 file!");
+        event.target.value = '';
+        return;
+      }
+
+      Array.from(files).forEach((file) => {
+        const reader = new FileReader();
+        reader.onload = function(e) {
+          const base64String = e.target.result;
+          selectedPhotosBase64.push({
+            base64: base64String,
+            type: file.type
+          });
+
+          // Tampilkan preview kecil di UI
+          const img = document.createElement('img');
+          img.src = base64String;
+          img.className = "w-full h-16 object-cover rounded border border-gray-700 shadow-sm";
+          previewContainer.appendChild(img);
+        };
+        reader.readAsDataURL(file);
+      });
+    }
+
+    // Ambil Data dari Sheet (doGet)
+    function fetchData() {
+      const tbody = document.getElementById('data-table-body');
+      tbody.innerHTML = `<tr><td colspan="4" class="text-center py-8 text-gray-500">Memuat data ${currentMenu}...</td></tr>`;
+
+      if (WEB_APP_URL === "https://script.google.com/macros/s/AKfycbxoxFPNzwDvvOsbUpbKbcogzcq0CBVXU34aTA8BL-y8fnqY5Gudwpci1B7bwLQJrJJn5w/exec") {
+        tbody.innerHTML = `<tr><td colspan="4" class="text-center py-8 text-amber-500 font-medium">⚠️ Konfigurasi WEB_APP_URL belum diisi!</td></tr>`;
+        return;
+      }
+
+      fetch(`${WEB_APP_URL}?menu=${currentMenu}`)
+        .then(res => res.json())
+        .then(response => {
+          if (response.success) {
+            if (response.data.length === 0) {
+              tbody.innerHTML = `<tr><td colspan="4" class="text-center py-8 text-gray-500">Belum ada data pengiriman.</td></tr>`;
+              return;
+            }
+
+            tbody.innerHTML = response.data.map(item => {
+              let photoHtml = '';
+              for(let i = 1; i <= 6; i++) {
+                const linkFoto = item[`Foto ${i}`] || item[`foto_${i}`] || item[`Foto${i}`] || Object.values(item)[3+i]; 
+                if (linkFoto) {
+                  photoHtml += `<a href="${linkFoto}" target="_blank" class="inline-block bg-cyan-950/40 text-cyan-400 border border-cyan-900 text-[11px] font-medium px-2 py-0.5 rounded hover:bg-cyan-900/60 transition mr-1 mb-1">Foto ${i}</a>`;
+                }
+              }
+
+              return `
+                <tr class="hover:bg-gray-900/50 transition">
+                  <td class="py-3 px-4">
+                    <span class="text-xs text-gray-500 block">${item.Timestamp || Object.values(item)[0]}</span>
+                    <span class="font-bold text-gray-200">${item['Nomor DO'] || item.nomor_do || Object.values(item)[1]}</span>
+                  </td>
+                  <td class="py-3 px-4 text-gray-300 font-medium">${item.Ekspedisi || item.ekspedisi || Object.values(item)[2]}</td>
+                  <td class="py-3 px-4 text-gray-400 text-xs max-w-[180px] truncate" title="${item.Keterangan || item.keterangan || ''}">${item.Keterangan || item.keterangan || '-'}</td>
+                  <td class="py-3 px-4">${photoHtml || '<span class="text-gray-600 text-xs">-</span>'}</td>
+                </tr>
+              `;
+            }).join('');
+          } else {
+            tbody.innerHTML = `<tr><td colspan="4" class="text-center py-8 text-red-400">Gagal: ${response.message}</td></tr>`;
+          }
+        })
+        .catch(err => {
+          tbody.innerHTML = `<tr><td colspan="4" class="text-center py-8 text-red-400">Error koneksi server API.</td></tr>`;
+        });
+    }
+
+    // Simpan Form ke Web App GAS (doPost)
+    function handleSubmit(event) {
+      event.preventDefault();
+      
+      const btnSubmit = document.getElementById('btn-submit');
+      const nomorDoInput = document.getElementById('nomor_do');
+      const eksped
