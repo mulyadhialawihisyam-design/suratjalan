@@ -3,83 +3,104 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Sistem Log Surat Jalan (EHUB & TO_PNG) - Dark Mode</title>
+  <title>LOG SURAT JALAN - TERMINAL SYSTEM v1.0</title>
+  <!-- Tailwind CSS CDN -->
   <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Google Font Monospace untuk feel CMD -->
+  <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500;700&display=swap" rel="stylesheet">
+  <style>
+    body { font-family: 'Fira Code', monospace; }
+    /* Efek Glow Neon Khas Terminal Retro */
+    .neon-border { box-shadow: 0 0 10px rgba(6, 182, 212, 0.2); }
+    .neon-text-glow { text-shadow: 0 0 8px rgba(6, 182, 212, 0.5); }
+    .neon-btn-glow:hover { box-shadow: 0 0 15px rgba(6, 182, 212, 0.6); }
+  </style>
 </head>
-<body class="bg-gray-900 min-h-screen text-gray-100 font-sans">
+<body class="bg-black min-h-screen text-cyan-400 p-4 md:p-8 selection:bg-cyan-500 selection:text-black">
 
-  <div class="max-w-4xl mx-auto px-4 py-8">
-    <header class="mb-8 text-center">
-      <h1 class="text-3xl font-bold text-cyan-400">Log Surat Jalan</h1>
-      <p class="text-gray-400 mt-2">Dokumentasi Serah Terima DO & Foto Bukti</p>
+  <div class="max-w-5xl mx-auto">
+    <!-- Header Style Prompt CMD -->
+    <header class="mb-8 border-b border-cyan-900 pb-4">
+      <div class="flex items-center text-xs text-gray-500 mb-1">
+        <span>SYS.LOG_WMS // GENERATION_ACTIVE</span>
+      </div>
+      <h1 class="text-2xl md:text-3xl font-bold tracking-wider neon-text-glow text-cyan-400">
+        &gt;_ LOG_SURAT_JALAN.EXE
+      </h1>
     </header>
 
-    <div class="flex justify-center space-x-4 mb-6">
-      <button id="tab-ehub" onclick="switchMenu('EHUB')" class="px-6 py-2.5 font-semibold rounded-lg bg-cyan-600 text-white shadow-md focus:outline-none transition">
-        EHUB
+    <!-- Navigasi Menu / Tab -->
+    <div class="flex space-x-2 mb-6 text-sm">
+      <button id="tab-ehub" type="button" onclick="switchMenu('EHUB')" class="px-5 py-2 font-bold uppercase tracking-widest border border-cyan-400 bg-cyan-950 text-cyan-400 focus:outline-none transition-all duration-200 cursor-pointer">
+        [ EHUB ]
       </button>
-      <button id="tab-topng" onclick="switchMenu('TO_PNG')" class="px-6 py-2.5 font-semibold rounded-lg bg-gray-800 text-gray-300 border border-gray-700 hover:bg-gray-700 focus:outline-none transition">
-        TO_PNG
+      <button id="tab-topng" type="button" onclick="switchMenu('TO_PNG')" class="px-5 py-2 font-bold uppercase tracking-widest border border-cyan-900 bg-transparent text-gray-500 hover:text-cyan-400 hover:border-cyan-700 focus:outline-none transition-all duration-200 cursor-pointer">
+        [ TO_PNG ]
       </button>
     </div>
 
-    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-      <div class="md:col-span-1 bg-gray-950 p-6 rounded-xl shadow-md border border-gray-800 h-fit">
-        <h2 class="text-lg font-bold mb-4 text-gray-200 flex items-center">
-          Input Data <span id="current-menu-badge" class="ml-2 text-xs px-2 py-0.5 bg-cyan-950 text-cyan-400 rounded-full border border-cyan-800/50">EHUB</span>
-        </h2>
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+      <!-- FORM INPUT -->
+      <div class="lg:col-span-1 bg-black p-6 border border-cyan-800 neon-border">
+        <div class="text-xs text-cyan-500 uppercase tracking-widest mb-4 flex justify-between">
+          <span>[ INPUT_CONSOLE ]</span>
+          <span id="current-menu-badge" class="text-cyan-400 animate-pulse">EHUB_MODE</span>
+        </div>
         
-        <form id="do-form" onsubmit="handleSubmit(event)" class="space-y-4">
+        <form id="do-form" onsubmit="handleSubmit(event)" class="space-y-4 text-sm">
           <div>
-            <label class="block text-xs font-semibold text-gray-400 uppercase mb-1">Nomor DO</label>
-            <input type="text" id="nomor_do" class="w-full bg-gray-900 border border-gray-700 text-gray-100 px-3 py-2 rounded-lg focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500 outline-none transition" placeholder="Masukkan nomor DO..." required>
+            <label class="block text-xs text-gray-400 uppercase mb-1">&gt; NOMOR DO :</label>
+            <input type="text" id="nomor_do" class="w-full bg-gray-950 border border-cyan-900 text-cyan-300 px-3 py-2 rounded-none focus:border-cyan-400 focus:ring-1 focus:ring-cyan-400 outline-none transition" placeholder="ENTER DO NUMBER..." required>
           </div>
 
           <div>
-            <label class="block text-xs font-semibold text-gray-400 uppercase mb-1">Ekspedisi</label>
-            <input type="text" id="ekspedisi" class="w-full bg-gray-900 border border-gray-700 text-gray-100 px-3 py-2 rounded-lg focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500 outline-none transition" placeholder="Nama driver / armada..." required>
+            <label class="block text-xs text-gray-400 uppercase mb-1">&gt; EKSPEDISI / DRIVER :</label>
+            <input type="text" id="ekspedisi" class="w-full bg-gray-950 border border-cyan-900 text-cyan-300 px-3 py-2 rounded-none focus:border-cyan-400 focus:ring-1 focus:ring-cyan-400 outline-none transition" placeholder="ENTER CARRIER NAME..." required>
           </div>
 
           <div>
-            <label class="block text-xs font-semibold text-gray-400 uppercase mb-1">Keterangan</label>
-            <textarea id="keterangan" rows="3" class="w-full bg-gray-900 border border-gray-700 text-gray-100 px-3 py-2 rounded-lg focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500 outline-none transition text-sm" placeholder="Catatan tambahan (opsional)..."></textarea>
+            <label class="block text-xs text-gray-400 uppercase mb-1">&gt; KETERANGAN :</label>
+            <textarea id="keterangan" rows="3" class="w-full bg-gray-950 border border-cyan-900 text-cyan-300 px-3 py-2 rounded-none focus:border-cyan-400 focus:ring-1 focus:ring-cyan-400 outline-none transition text-xs" placeholder="ADDITIONAL NOTES (OPTIONAL)..."></textarea>
           </div>
 
           <div>
-            <label class="block text-xs font-semibold text-gray-400 uppercase mb-1">Upload Foto (Maks 6)</label>
-            <input type="file" id="photos" accept="image/*" multiple onchange="handleFileSelect(event)" class="w-full text-sm text-gray-400 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-cyan-950 file:text-cyan-400 hover:file:bg-cyan-900 cursor-pointer">
-            <p class="text-[10px] text-gray-500 mt-1">Bisa pilih beberapa foto sekaligus dari galeri/kamera.</p>
+            <label class="block text-xs text-gray-400 uppercase mb-1">&gt; ATTACH_PHOTOS (MAX 6) :</label>
+            <input type="file" id="photos" accept="image/*" multiple onchange="handleFileSelect(event)" class="w-full text-xs text-gray-500 file:mr-4 file:py-1.5 file:px-3 file:border file:border-cyan-800 file:bg-cyan-950 file:text-cyan-400 file:cursor-pointer hover:file:bg-cyan-900">
           </div>
 
+          <!-- Preview File Gambar -->
           <div id="image-preview" class="grid grid-cols-3 gap-2 pt-2"></div>
 
-          <button type="submit" id="btn-submit" class="w-full bg-cyan-600 hover:bg-cyan-700 text-white font-medium py-2.5 px-4 rounded-lg transition shadow focus:outline-none flex justify-center items-center">
-            Simpan Data
+          <button type="submit" id="btn-submit" class="w-full bg-cyan-950 border border-cyan-400 text-cyan-400 font-bold py-2.5 px-4 tracking-widest transition-all duration-200 neon-btn-glow active:bg-cyan-400 active:text-black cursor-pointer">
+            EXECUTE_SAVE
           </button>
         </form>
       </div>
 
-      <div class="md:col-span-2 bg-gray-950 p-6 rounded-xl shadow-md border border-gray-800">
+      <!-- HISTORY / TABEL DATA -->
+      <div class="lg:col-span-2 bg-black p-6 border border-cyan-800 neon-border">
         <div class="flex justify-between items-center mb-4">
-          <h2 class="text-lg font-bold text-gray-200">Riwayat Pengiriman</h2>
-          <button onclick="fetchData()" class="text-sm text-cyan-400 hover:text-cyan-300 font-medium flex items-center">
-            🔄 Refresh
+          <div class="text-xs text-cyan-500 uppercase tracking-widest">
+            <span>[ SYSTEM_DATABASE_OUTPUT ]</span>
+          </div>
+          <button type="button" onclick="fetchData()" class="text-xs text-cyan-400 hover:text-white font-medium border border-cyan-900 px-2 py-1 bg-gray-950 hover:border-cyan-500 transition cursor-pointer">
+            REFRESH_SYS()
           </button>
         </div>
 
         <div class="overflow-x-auto">
-          <table class="w-full text-left border-collapse text-sm">
+          <table class="w-full text-left border-collapse text-xs">
             <thead>
-              <tr class="bg-gray-900 text-gray-400 uppercase text-[11px] tracking-wider border-b border-gray-800">
-                <th class="py-3 px-4 font-semibold">Waktu / DO</th>
-                <th class="py-3 px-4 font-semibold">Ekspedisi</th>
-                <th class="py-3 px-4 font-semibold">Keterangan</th>
-                <th class="py-3 px-4 font-semibold">Foto Bukti</th>
+              <tr class="bg-gray-950 text-gray-400 border-b border-cyan-800">
+                <th class="py-3 px-3 font-semibold tracking-wider">TIMESTAMP / DO_NO</th>
+                <th class="py-3 px-3 font-semibold tracking-wider">CARRIER</th>
+                <th class="py-3 px-3 font-semibold tracking-wider">REMARKS</th>
+                <th class="py-3 px-3 font-semibold tracking-wider">ATTACHMENTS</th>
               </tr>
             </thead>
-            <tbody id="data-table-body" class="divide-y divide-gray-800">
+            <tbody id="data-table-body" class="divide-y divide-cyan-950 text-cyan-300">
               <tr>
-                <td colspan="4" class="text-center py-8 text-gray-500">Memuat data riwayat...</td>
+                <td colspan="4" class="text-center py-8 text-gray-600">INITIALIZING DATA FETCH...</td>
               </tr>
             </tbody>
           </table>
@@ -89,7 +110,7 @@
   </div>
 
   <script>
-    // --- KONFIGURASI URL WEB APP GAS LO ---
+    // --- TEMPEL URL WEB APP GAS LO YANG SUDAH DIDEPLOY DI SINI ---
     const WEB_APP_URL = "PASANG_URL_EXEC_WEB_APP_GAS_DI_SINI";
 
     let currentMenu = "EHUB";
@@ -104,14 +125,14 @@
       const badge = document.getElementById('current-menu-badge');
 
       if (menu === 'EHUB') {
-        tabEhub.className = "px-6 py-2.5 font-semibold rounded-lg bg-cyan-600 text-white shadow-md focus:outline-none transition";
-        tabToPng.className = "px-6 py-2.5 font-semibold rounded-lg bg-gray-800 text-gray-300 border border-gray-700 hover:bg-gray-700 focus:outline-none transition";
+        tabEhub.className = "px-5 py-2 font-bold uppercase tracking-widest border border-cyan-400 bg-cyan-950 text-cyan-400 focus:outline-none transition-all duration-200 cursor-pointer";
+        tabToPng.className = "px-5 py-2 font-bold uppercase tracking-widest border border-cyan-900 bg-transparent text-gray-500 hover:text-cyan-400 hover:border-cyan-700 focus:outline-none transition-all duration-200 cursor-pointer";
       } else {
-        tabToPng.className = "px-6 py-2.5 font-semibold rounded-lg bg-cyan-600 text-white shadow-md focus:outline-none transition";
-        tabEhub.className = "px-6 py-2.5 font-semibold rounded-lg bg-gray-800 text-gray-300 border border-gray-700 hover:bg-gray-700 focus:outline-none transition";
+        tabToPng.className = "px-5 py-2 font-bold uppercase tracking-widest border border-cyan-400 bg-cyan-950 text-cyan-400 focus:outline-none transition-all duration-200 cursor-pointer";
+        tabEhub.className = "px-5 py-2 font-bold uppercase tracking-widest border border-cyan-900 bg-transparent text-gray-500 hover:text-cyan-400 hover:border-cyan-700 focus:outline-none transition-all duration-200 cursor-pointer";
       }
 
-      badge.textContent = menu;
+      badge.textContent = menu + "_MODE";
       fetchData();
     }
 
@@ -123,7 +144,7 @@
       selectedPhotosBase64 = [];
 
       if (files.length > 6) {
-        alert("Maksimal foto yang diupload adalah 6 file!");
+        alert("CRITICAL ERROR: MAXIMUM 6 PHOTOS ALLOWED!");
         event.target.value = '';
         return;
       }
@@ -137,10 +158,9 @@
             type: file.type
           });
 
-          // Tampilkan preview kecil di UI
           const img = document.createElement('img');
           img.src = base64String;
-          img.className = "w-full h-16 object-cover rounded border border-gray-700 shadow-sm";
+          img.className = "w-full h-12 object-cover border border-cyan-900 shadow-sm filter contrast-125";
           previewContainer.appendChild(img);
         };
         reader.readAsDataURL(file);
@@ -150,10 +170,10 @@
     // Ambil Data dari Sheet (doGet)
     function fetchData() {
       const tbody = document.getElementById('data-table-body');
-      tbody.innerHTML = `<tr><td colspan="4" class="text-center py-8 text-gray-500">Memuat data ${currentMenu}...</td></tr>`;
+      tbody.innerHTML = `<tr><td colspan="4" class="text-center py-8 text-cyan-600 animate-pulse">LOADING_${currentMenu}_RECORDS...</td></tr>`;
 
-      if (WEB_APP_URL === "https://script.google.com/macros/s/AKfycbxoxFPNzwDvvOsbUpbKbcogzcq0CBVXU34aTA8BL-y8fnqY5Gudwpci1B7bwLQJrJJn5w/exec") {
-        tbody.innerHTML = `<tr><td colspan="4" class="text-center py-8 text-amber-500 font-medium">⚠️ Konfigurasi WEB_APP_URL belum diisi!</td></tr>`;
+      if (!WEB_APP_URL || WEB_APP_URL === "PASANG_URL_EXEC_WEB_APP_GAS_DI_SINI") {
+        tbody.innerHTML = `<tr><td colspan="4" class="text-center py-8 text-amber-500 font-medium">⚠️ WEB_APP_URL_NOT_CONFIGURED!</td></tr>`;
         return;
       }
 
@@ -161,38 +181,47 @@
         .then(res => res.json())
         .then(response => {
           if (response.success) {
-            if (response.data.length === 0) {
-              tbody.innerHTML = `<tr><td colspan="4" class="text-center py-8 text-gray-500">Belum ada data pengiriman.</td></tr>`;
+            if (!response.data || response.data.length === 0) {
+              tbody.innerHTML = `<tr><td colspan="4" class="text-center py-8 text-gray-600">NO RECORDS FOUND.</td></tr>`;
               return;
             }
 
             tbody.innerHTML = response.data.map(item => {
+              // Ambil kunci object dinisialisasi secara dinamis agar aman meskipun ada spasi/perbedaan huruf kapital
+              const keys = Object.keys(item);
+              const timestamp = item[keys[0]] || '-';
+              const nomorDo = item[keys[1]] || '-';
+              const ekspedisi = item[keys[2]] || '-';
+              const keterangan = item[keys[3]] || '-';
+
+              // Loop kolom foto index 4 sampai 9 di baris sheet kamu
               let photoHtml = '';
-              for(let i = 1; i <= 6; i++) {
-                const linkFoto = item[`Foto ${i}`] || item[`foto_${i}`] || item[`Foto${i}`] || Object.values(item)[3+i]; 
-                if (linkFoto) {
-                  photoHtml += `<a href="${linkFoto}" target="_blank" class="inline-block bg-cyan-950/40 text-cyan-400 border border-cyan-900 text-[11px] font-medium px-2 py-0.5 rounded hover:bg-cyan-900/60 transition mr-1 mb-1">Foto ${i}</a>`;
+              let photoIndex = 1;
+              for (let i = 4; i <= 9; i++) {
+                if (keys[i] && item[keys[i]]) {
+                  photoHtml += `<a href="${item[keys[i]]}" target="_blank" class="inline-block border border-cyan-800 bg-cyan-950/50 text-cyan-400 text-[10px] px-1.5 py-0.5 hover:bg-cyan-400 hover:text-black transition mr-1 mb-1">[IMG_${photoIndex}]</a>`;
+                  photoIndex++;
                 }
               }
 
               return `
-                <tr class="hover:bg-gray-900/50 transition">
-                  <td class="py-3 px-4">
-                    <span class="text-xs text-gray-500 block">${item.Timestamp || Object.values(item)[0]}</span>
-                    <span class="font-bold text-gray-200">${item['Nomor DO'] || item.nomor_do || Object.values(item)[1]}</span>
+                <tr class="hover:bg-cyan-950/20 transition-all">
+                  <td class="py-3 px-3">
+                    <span class="text-[10px] text-gray-600 block">${timestamp}</span>
+                    <span class="font-bold text-cyan-400">${nomorDo}</span>
                   </td>
-                  <td class="py-3 px-4 text-gray-300 font-medium">${item.Ekspedisi || item.ekspedisi || Object.values(item)[2]}</td>
-                  <td class="py-3 px-4 text-gray-400 text-xs max-w-[180px] truncate" title="${item.Keterangan || item.keterangan || ''}">${item.Keterangan || item.keterangan || '-'}</td>
-                  <td class="py-3 px-4">${photoHtml || '<span class="text-gray-600 text-xs">-</span>'}</td>
+                  <td class="py-3 px-3 text-cyan-200 font-medium">${ekspedisi}</td>
+                  <td class="py-3 px-3 text-gray-400 max-w-[150px] truncate" title="${keterangan}">${keterangan}</td>
+                  <td class="py-3 px-3">${photoHtml || '<span class="text-gray-700">-</span>'}</td>
                 </tr>
               `;
             }).join('');
           } else {
-            tbody.innerHTML = `<tr><td colspan="4" class="text-center py-8 text-red-400">Gagal: ${response.message}</td></tr>`;
+            tbody.innerHTML = `<tr><td colspan="4" class="text-center py-8 text-red-500">ERROR: ${response.message}</td></tr>`;
           }
         })
         .catch(err => {
-          tbody.innerHTML = `<tr><td colspan="4" class="text-center py-8 text-red-400">Error koneksi server API.</td></tr>`;
+          tbody.innerHTML = `<tr><td colspan="4" class="text-center py-8 text-red-500">NET::CONNECTION_FAILED</td></tr>`;
         });
     }
 
@@ -202,4 +231,56 @@
       
       const btnSubmit = document.getElementById('btn-submit');
       const nomorDoInput = document.getElementById('nomor_do');
-      const eksped
+      const ekspedisiInput = document.getElementById('ekspedisi');
+      const keteranganInput = document.getElementById('keterangan');
+      const fileInput = document.getElementById('photos');
+
+      btnSubmit.disabled = true;
+      btnSubmit.innerText = "SAVING_DATA...";
+      btnSubmit.className = "w-full bg-gray-950 border border-gray-700 text-gray-600 font-bold py-2.5 px-4 tracking-widest cursor-not-allowed";
+
+      const payload = {
+        menu: currentMenu,
+        nomor_do: nomorDoInput.value,
+        ekspedisi: ekspedisiInput.value,
+        keterangan: keteranganInput.value,
+        photos: selectedPhotosBase64
+      };
+
+      fetch(WEB_APP_URL, {
+        method: "POST",
+        body: JSON.stringify(payload)
+      })
+      .then(res => res.json())
+      .then(response => {
+        if (response.success) {
+          alert("TRANSACTION SUCCESSFUL: RECORD ARCHIVED.");
+          nomorDoInput.value = '';
+          ekspedisiInput.value = '';
+          keteranganInput.value = '';
+          fileInput.value = '';
+          document.getElementById('image-preview').innerHTML = '';
+          selectedPhotosBase64 = [];
+          
+          fetchData();
+        } else {
+          alert("WRITE_ERROR: " + response.message);
+        }
+      })
+      .catch(err => {
+        alert("FATAL NETWORK ERROR / CORS HEADER MISSING ON GAS.");
+      })
+      .finally(() => {
+        btnSubmit.disabled = false;
+        btnSubmit.innerText = "EXECUTE_SAVE";
+        btnSubmit.className = "w-full bg-cyan-950 border border-cyan-400 text-cyan-400 font-bold py-2.5 px-4 tracking-widest transition-all duration-200 neon-btn-glow active:bg-cyan-400 active:text-black cursor-pointer";
+      });
+    }
+
+    // Jalankan render data otomatis pas pertama dibuka
+    window.onload = function() {
+      fetchData();
+    };
+  </script>
+</body>
+</html>
